@@ -31,6 +31,29 @@ racket compiler.rkt -v test-programs/sum1.irv
 
 (Also pass in -m for Mac)
 
+sub1.irv
+(mov-lit r0 4)
+(mov-lit r1 5)
+(mov-lit r2 10)
+(sub r2 r1)
+(sub r2 r0)
+(print r2)
+
+add1.irv
+(mov-lit r0 4)
+(mov-lit r1 5)
+(mov-lit r2 10)
+(add r2 r1)
+(add r2 r0)
+(print r2)
+
+div1.irv
+(mov-lit r0 2)
+(mov-lit r1 6)
+(div r1 r0)
+(print r1)
+
+IR-virtual uses virtual registers, which are not limited by the hardware. While x86 has a fixed number of physical registers, which makes IR-virtual easier to program and optimization at higher levels of the compiler without worrying about the register location. IR-virtual also simplifies operation into more generic forms unlike x86 where you have to deal with addressing models and specific instruction for inputs and outputs. But since IR-virtual does not directly correspond to the physical machine instructions, we need to translate those virtual instructions to actual machine codes, which can cause a lot of error. Moreover, since it does not directly work on the hardware, it has less control over the hardware and may miss opportunities to leverage some hardware features.
 [ Question 2 ] 
 
 For this task, you will write three new .ifa programs. Your programs
@@ -49,6 +72,19 @@ carefully the relevance of each of the intermediate representations.
 For this question, please add your `.ifa` programs either (a) here or
 (b) to the repo and write where they are in this file.
 
+add1.ifa
+(+ 1 2)
+<img width="596" alt="Screenshot 2024-05-07 at 1 41 04 AM" src="https://github.com/ch0118/p5/assets/114699894/bd8d0a69-9b9d-4997-8e69-fc1d1a7921eb">
+
+sub1.ifa
+(- 2 1)
+<img width="609" alt="Screenshot 2024-05-07 at 1 41 50 AM" src="https://github.com/ch0118/p5/assets/114699894/a957e6f3-cbec-4ede-a0a6-c8b72e3deeb4">
+
+mul1.ifa
+(* 2 3)
+<img width="552" alt="Screenshot 2024-05-07 at 1 42 16 AM" src="https://github.com/ch0118/p5/assets/114699894/81fb95ae-7e16-4d96-955d-f9fa0a2886d1">
+In the IfArith phrase, it defines what mul1 does, then in the IfArith-tiny phrase, it simplifies complex constructs into basic operations. Then ANF phrase makes the control flow and data dependencies explicit, and in the IR-virtual phrase, it allows the compiler to focus on logical instruction flow, then finally in the x86 phrase, it is the actual code that the CPU executes.
+
 [ Question 3 ] 
 
 Describe each of the passes of the compiler in a slight degree of
@@ -61,6 +97,23 @@ there could be more?
 In answering this question, you must use specific examples that you
 got from running the compiler and generating an output.
 
+from IfArith to IfArith-Tiny, it breaks (* 2 3) into more simple form, since (* 2 3) is already a simple form, it does not change, then when it get pass into ANF it turns into '(let ((x1254 2)) (let ((x1255 3)) (let ((x1256 (* x1254 x1255))) x1256))), which each operand and result is stored explicitly in a temporary variable. Then when it gets passed on to IR-virtual it became 
+(label lab1257) (mov-lit x1254 2)
+(label lab1258) (mov-lit x1255 3)
+(label lab1259) (mov-reg x1256 x1254)
+(imul x1256 x1255)
+(return x1256) 
+then being mapped into actual x86 assembly
+mov esi, 2
+mov [rbp-24], esi
+mov esi, 3
+mov [rbp-16], esi
+mov esi, [rbp-24]
+mov edi, [rbp-16]
+imul eax, edi
+mov [rbp-8], eax
+mov rax, [rbp-8]
+
 [ Question 4 ] 
 
 This is a larger project, compared to our previous projects. This
@@ -70,6 +123,8 @@ project that we discussed in class this semester. There is no specific
 definition of what an idiom is: think carefully about whether you see
 any pattern in this code that resonates with you from earlier in the
 semester.
+
+I think pattern matching is the one that stood out the most to me since our last few projects and exercises also uses pattern matching. Tail recursion is also something that I spot that we worked on through out the semester along with folding as well.
 
 [ Question 5 ] 
 
