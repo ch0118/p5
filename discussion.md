@@ -144,6 +144,8 @@ ask me.
 Your team will receive a small bonus for being the first team to
 report a unique bug (unique determined by me).
 
+bool0 bool1 not not1 didn't work since there is no matching clause for #t and #f
+
 [ High Level Reflection ] 
 
 In roughly 100-500 words, write a summary of your findings in working
@@ -154,3 +156,4 @@ nuts and bolts of code, try to use this experience as a way to think
 about how you would approach doing group code critique. What would you
 do differently next time, what did you learn?
 
+While working on this project, I think the concept of IR-vitual is what I found most interesting, especially knowing that coding was first invented in 1883 and it had already developed so much in less then two hundred years. I find the process of translating and debugging IfArith to x86 assembly code interesting as well as I had never investigated in this area. Before this project, I did not know anything about IR-virtual and from working on this project, I was able to learn what IR-virtual is and how codes are being passed on and translated in each phrase and finally into x86 assembly. What I found challenging is always the debugging part where I have to look into my code everytime when there is a error occured, and sometimes when I fixed one bug another bug pops up because it does not work along with the new code which is frustrating. 
